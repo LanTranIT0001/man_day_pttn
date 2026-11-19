@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quà 19/11 · Ban Phong trào - Tình nguyện BIT</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy1:#07183a;--navy2:#0e2c63;--navy3:#16408a;
+  --or:#ff8a1f;--or2:#ffb347;--or3:#e56a00;
+  --ink:#eaf1ff;--soft:#9db8ea;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:linear-gradient(135deg,var(--navy1),var(--navy2) 60%,var(--navy3));color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;position:relative}
+body::before{content:"";position:fixed;inset:0;background-image:radial-gradient(rgba(255,255,255,.09) 1.2px,transparent 1.4px);background-size:20px 20px;pointer-events:none}
+.bgstripes{position:fixed;right:-120px;top:-60px;width:360px;height:130%;transform:skewX(-14deg);pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgba(255,138,31,.9) 0 26px,transparent 26px 44px);opacity:.2;animation:drift 9s linear infinite}
+@keyframes drift{to{background-position:44px 0}}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:6}
+.scene{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center}
+#s1{z-index:2;cursor:pointer}
+#s2{z-index:3;opacity:0;visibility:hidden;transition:opacity 1s}
+#s2.show{opacity:1;visibility:visible}
+h1,h2,.mont{font-family:'Montserrat',sans-serif}
+.pill{display:inline-block;background:var(--or);color:var(--navy1);font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;letter-spacing:1.8px;padding:7px 14px;border-radius:999px}
+h1{margin:14px 0 10px;font-weight:900;font-size:clamp(24px,6.4vw,50px);line-height:1;letter-spacing:-1px;text-transform:uppercase;color:#fff}
+h1 span{display:block;color:var(--or2)}
+.hint{color:var(--soft);font-weight:600;letter-spacing:.5px;font-size:14.5px;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.4;transform:scale(.97)}}
+
+/* hộp quà */
+.giftwrap{position:relative;width:min(70vw,280px);margin-top:34px;animation:float 2.8s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+.giftwrap.shake{animation:shake .6s}
+@keyframes shake{0%,100%{transform:rotate(0)}15%{transform:rotate(-6deg)}35%{transform:rotate(6deg)}55%{transform:rotate(-4deg)}75%{transform:rotate(3deg)}}
+.giftwrap svg{display:block;width:100%;overflow:visible;filter:drop-shadow(0 18px 24px rgba(0,0,0,.5))}
+#glid{transform-box:fill-box;transform-origin:50% 100%;transition:transform .8s cubic-bezier(.3,1.5,.5,1),opacity .8s .1s}
+.open #glid{transform:translateY(-84px) rotate(-16deg);opacity:.0}
+.rays{position:absolute;left:50%;top:38%;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;opacity:0;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,rgba(255,179,71,.85) 0 7deg,transparent 7deg 20deg);
+  -webkit-mask:radial-gradient(circle,#000 0,transparent 66%);mask:radial-gradient(circle,#000 0,transparent 66%);transition:opacity .7s;animation:spin 9s linear infinite}
+.open .rays{opacity:.9}
+@keyframes spin{to{transform:rotate(360deg)}}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:9;transition:opacity .6s}
+#flash.on{opacity:1}
+
+/* panel */
+.panel{position:relative;width:min(94vw,560px);border-radius:22px;text-align:left;
+  background:linear-gradient(rgba(10,28,64,.9),rgba(10,28,64,.9)) padding-box,linear-gradient(135deg,var(--or),#fff,var(--or2),var(--navy3),var(--or)) border-box;
+  border:2px solid transparent;backdrop-filter:blur(8px);box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 50px rgba(255,138,31,.15)}
+.pscroll{max-height:90vh;max-height:90dvh;overflow:auto;-webkit-overflow-scrolling:touch;border-radius:20px;padding:26px 24px 26px;scrollbar-width:thin;scrollbar-color:var(--or) transparent}
+.rise{opacity:0;transform:translateY(14px)}
+#s2.show .rise{animation:rise .8s both}
+@keyframes rise{to{opacity:1;transform:none}}
+.eyebrow{font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;letter-spacing:2.4px;color:var(--or2);text-transform:uppercase}
+.panel h2{margin:6px 0 6px;font-weight:900;font-size:clamp(24px,6.6vw,34px);line-height:1.1;color:#fff;text-transform:uppercase;letter-spacing:-.5px}
+.panel h2 em{font-style:normal;color:var(--or2)}
+.lead{margin:0 0 16px;line-height:1.7;font-size:15px;color:var(--ink)}
+
+.field{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input{flex:1 1 180px;min-width:0;font:inherit;font-weight:600;color:#fff;background:rgba(255,255,255,.08);border:1.5px solid rgba(157,184,234,.5);border-radius:999px;padding:12px 18px;outline:none}
+input::placeholder{color:var(--soft);font-weight:500}
+input:focus{border-color:var(--or2);box-shadow:0 0 0 3px rgba(255,138,31,.25)}
+button{font:inherit;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:.8px;border:0;border-radius:999px;padding:13px 22px;cursor:pointer;color:var(--navy1);
+  background:linear-gradient(135deg,var(--or2),var(--or));box-shadow:0 8px 18px rgba(255,138,31,.4);transition:transform .2s,opacity .2s}
+button:hover{transform:translateY(-2px)}
+button:disabled{opacity:.55;cursor:default;transform:none}
+button.ghost{background:transparent;color:var(--or2);box-shadow:inset 0 0 0 1.5px var(--or)}
+button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+/* máy quay danh hiệu */
+.slot{position:relative;height:76px;border-radius:14px;overflow:hidden;background:#07122b;border:2px solid var(--or);box-shadow:inset 0 0 24px rgba(0,0,0,.6)}
+.slot::before,.slot::after{content:"";position:absolute;left:0;right:0;height:22px;z-index:2;pointer-events:none}
+.slot::before{top:0;background:linear-gradient(#07122b,transparent)}
+.slot::after{bottom:0;background:linear-gradient(transparent,#07122b)}
+.track{will-change:transform}
+.track div{height:76px;display:flex;align-items:center;justify-content:center;padding:0 14px;text-align:center;font-family:'Montserrat',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(16px,4.6vw,22px);color:#fff;letter-spacing:.3px}
+.track div.q{color:var(--or2);font-size:30px;letter-spacing:8px}
+
+/* thẻ kết quả */
+.result{display:none;margin-top:18px;position:relative;border-radius:18px;padding:20px 18px 18px;text-align:center;overflow:hidden;
+  background:linear-gradient(150deg,#ffd28a,#ff8a1f 55%,#e56a00);color:var(--navy1);box-shadow:0 16px 34px rgba(0,0,0,.45)}
+.result.on{display:block;animation:pop .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.7) rotate(-4deg);opacity:0}}
+.result::before{content:"";position:absolute;top:0;left:-70%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:shine 3.6s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-70%}100%{left:130%}}
+.badge{display:inline-block;background:var(--navy1);color:var(--or2);font-family:'Montserrat',sans-serif;font-weight:800;font-size:10.5px;letter-spacing:2px;padding:5px 12px;border-radius:999px}
+.result .for{margin:12px 0 0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;opacity:.85}
+.result .ttl{margin:4px 0 6px;font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(22px,6.4vw,32px);line-height:1.1;text-transform:uppercase}
+.result .dsc{margin:0 auto 14px;max-width:360px;font-weight:500;font-size:14.5px;line-height:1.55}
+.stats{text-align:left;display:grid;gap:9px}
+.stat{display:grid;grid-template-columns:134px 1fr 40px;gap:10px;align-items:center;font-size:12px;font-weight:600;white-space:nowrap}
+.bar{height:9px;border-radius:99px;background:rgba(7,24,58,.25);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--navy1);transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.stat b{font-family:'Montserrat',sans-serif;font-weight:800;text-align:right}
+@media (max-width:400px){.stat{grid-template-columns:118px 1fr 38px;gap:8px;font-size:11px}}
+
+.msg{display:none;margin-top:18px;padding:16px 18px;border-left:5px solid var(--or);border-radius:0 14px 14px 0;background:rgba(255,255,255,.07);line-height:1.75;font-size:14.5px}
+.msg.on{display:block;animation:rise .8s both}
+.msg p{margin:0 0 10px}
+.msg .sg{margin:6px 0 0;font-family:'Montserrat',sans-serif;font-weight:800;color:var(--or2);font-size:13px;letter-spacing:.5px}
+.msg .sg small{display:block;font-weight:500;color:var(--soft);letter-spacing:.3px;margin-bottom:2px}
+.tip{display:none;margin-top:12px;font-size:12.5px;color:var(--soft);text-align:center}
+.tip.on{display:block}
+.btns{display:none;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.btns.on{display:flex}
+
+@media (prefers-reduced-motion:reduce){.giftwrap,.hint,.rays,.bgstripes,.result::before{animation:none}}
+</style>
+</head>
+<body>
+<div class="bgstripes"></div>
+<canvas id="fx"></canvas>
+<div id="flash"></div>
+
+<!-- ======== MÀN 1: HỘP QUÀ ======== -->
+<section class="scene" id="s1">
+  <span class="pill">BAN PHONG TRÀO · TÌNH NGUYỆN BIT</span>
+  <h1>Quà dành cho<span>những chàng trai</span></h1>
+  <div class="hint" id="hint">Chạm vào hộp quà để mở nha</div>
+  <div class="giftwrap" id="gift">
+    <div class="rays"></div>
+    <svg viewBox="0 0 240 230" aria-label="Hộp quà">
+      <defs>
+        <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc06a"/><stop offset="1" stop-color="#e56a00"/></linearGradient>
+        <linearGradient id="gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd28a"/><stop offset="1" stop-color="#f07a0f"/></linearGradient>
+        <linearGradient id="rb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16408a"/><stop offset="1" stop-color="#07183a"/></linearGradient>
+        <radialGradient id="gw"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#ffe0a8"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+      </defs>
+      <ellipse cx="120" cy="218" rx="92" ry="9" fill="rgba(0,0,0,.35)"/>
+      <rect x="40" y="104" width="160" height="108" rx="8" fill="url(#gb)"/>
+      <rect x="106" y="104" width="28" height="108" fill="url(#rb)"/>
+      <path d="M40 212 L200 104" stroke="rgba(255,255,255,.12)" stroke-width="18"/>
+      <g id="glid">
+        <rect x="28" y="70" width="184" height="40" rx="9" fill="url(#gl)"/>
+        <rect x="106" y="70" width="28" height="40" fill="url(#rb)"/>
+        <path d="M120 70 C96 36 62 40 74 60 C82 72 108 72 120 70Z" fill="url(#rb)"/>
+        <path d="M120 70 C144 36 178 40 166 60 C158 72 132 72 120 70Z" fill="url(#rb)"/>
+        <circle cx="120" cy="68" r="9" fill="#ffb347"/>
+        <path d="M44 80h36" stroke="#fff" stroke-opacity=".55" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <g fill="#fff"><path d="M20 130l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/><path d="M222 96l2.4 5.6 5.6 2.4-5.6 2.4-2.4 5.6-2.4-5.6-5.6-2.4 5.6-2.4z"/></g>
+    </svg>
+  </div>
+</section>
+
+<!-- ======== MÀN 2: QUAY DANH HIỆU ======== -->
+<section class="scene" id="s2">
+  <div class="panel">
+    <div class="pscroll" id="pscroll">
+      <div class="rise" style="animation-delay:.3s">
+        <div class="eyebrow">19/11 · Ngày Quốc tế Đàn ông</div>
+        <h2>Mở khóa <em>danh hiệu</em> của cậu</h2>
+        <p class="lead">Trong đội hình Phong trào - Tình nguyện, mỗi chàng trai đều có một “siêu năng lực” riêng. Nhập tên rồi bấm quay, xem hôm nay cậu nhận được danh hiệu gì nhé!</p>
+      </div>
+
+      <div class="field rise" style="animation-delay:.7s">
+        <input id="nm" type="text" maxlength="22" placeholder="Nhập tên của cậu" autocomplete="off" aria-label="Tên của bạn">
+        <button id="spin">QUAY DANH HIỆU</button>
+      </div>
+
+      <div class="slot rise" style="animation-delay:1s" aria-live="polite"><div class="track" id="track"><div class="q">? ? ?</div></div></div>
+
+      <div class="result" id="result">
+        <span class="badge">BẢN GIỚI HẠN · 19/11</span>
+        <p class="for" id="rfor"></p>
+        <div class="ttl" id="rttl"></div>
+        <p class="dsc" id="rdsc"></p>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="tip" id="tip">Chụp màn hình thẻ này để khoe với anh em nha!</div>
+
+      <div class="msg" id="msg">
+        <p>Cảm ơn cậu vì đã là một phần của Phong trào - Tình nguyện. Dù cậu mới đến hay đã đồng hành từ lâu, sự có mặt của cậu vẫn làm đội hình thêm đủ đầy và tràn năng lượng.</p>
+        <p>Chúc cậu luôn giữ được ngọn lửa nhiệt huyết, học tập lên level đều đều và có thật nhiều tiếng cười bên anh em. Khi mệt, cứ nghỉ một nhịp, vì cậu luôn có cả tập thể ở phía sau.</p>
+        <div class="sg"><small>Thương mến,</small>Ban Phong trào - Tình nguyện BIT</div>
+      </div>
+
+      <div class="btns" id="btns">
+        <button id="again">QUAY DANH HIỆU KHÁC</button>
+        <button id="cheer" class="ghost">BẮN PHÁO MỪNG</button>
+        <button id="back" class="ghost">MỞ LẠI HỘP QUÀ</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var TITLES=[
+    ['Chiến thần deadline','Càng sát giờ, càng tỏa sáng.'],
+    ['Mood maker của Ban','Một câu đùa là đủ cứu cả buổi họp.'],
+    ['Kiến trúc sư sân khấu','Đến sớm nhất, dựng chắc nhất.'],
+    ['Thủ lĩnh năng lượng','Có cậu là cả đội tự động lên pin.'],
+    ['Người giữ lửa','Nhiệt huyết của cậu chưa bao giờ hết pin.'],
+    ['Cứu tinh hậu cần','Nước, sạc dự phòng, băng keo: cậu đều có sẵn.'],
+    ['Chiến binh tuyến đầu','Chương trình nào cũng thấy cậu ở hàng đầu.'],
+    ['Đồng đội 10 điểm','Gọi là có mặt, nhờ là giúp ngay.'],
+    ['Bậc thầy bình tĩnh','Sự cố xảy ra, cậu vẫn mỉm cười xử lý.'],
+    ['Siêu nhân đa nhiệm','Vừa học, vừa làm, vừa vui, cậu đều ổn.']
+  ];
+  var STATS=['Nhiệt huyết','Tinh thần đồng đội','Độ hài hước'];
+
+  /* ---------- Canvas: confetti + pháo ---------- */
+  var cv=document.getElementById('fx'),ctx=cv.getContext('2d'),W,H,DPR=Math.min(window.devicePixelRatio||1,2);
+  function rs(){W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
+  rs();addEventListener('resize',rs);
+  var P=[],ambient=false;
+  var cols=['#ff8a1f','#ffb347','#ffffff','#4d8dff','#16408a','#ffd28a'];
+  function star(x,y,r,a,c){
+    ctx.save();ctx.translate(x,y);ctx.globalAlpha=a;ctx.fillStyle=c;ctx.beginPath();
+    for(var k=0;k<8;k++){var rr=k%2?r*.25:r,an=k*Math.PI/4;ctx.lineTo(Math.cos(an)*rr,Math.sin(an)*rr)}
+    ctx.closePath();ctx.fill();ctx.restore();
+  }
+  function confetti(ox,oy,n,spread,power){
+    n=reduce?Math.round(n/3):n;
+    for(var j=0;j<n;j++){
+      var an=-Math.PI/2+(Math.random()-.5)*Math.PI*(spread||1.6),sp=(4+Math.random()*(power||12)),t=Math.random();
+      P.push({k:t<.6?0:t<.82?1:2,x:ox,y:oy,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp,g:.14+Math.random()*.06,f:.985,
+        w:6+Math.random()*8,h:4+Math.random()*6,c:cols[Math.random()*cols.length|0],r:Math.random()*6.28,vr:(Math.random()-.5)*.35,
+        wob:Math.random()*6.28,life:0,max:170+Math.random()*120});
+    }
+  }
+  function spark(ox,oy,n){
+    for(var j=0;j<n;j++){var an=j/n*6.283,sp=2.5+Math.random()*4.5;
+      P.push({k:3,x:ox,y:oy,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp,g:.05,f:.972,c:cols[Math.random()*3|0],life:0,max:60+Math.random()*25})}
+  }
+  function rocket(x,ty){P.push({k:4,x:x,y:H+10,vx:0,vy:-Math.sqrt(2*.14*(H-ty)),g:.14,f:1,life:0,max:400})}
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    if(ambient&&!reduce&&Math.random()<.12)P.push({k:0,x:Math.random()*W,y:-10,vx:(Math.random()-.5)*1.2,vy:1+Math.random()*1.5,g:.01,f:1,w:6+Math.random()*6,h:4+Math.random()*4,c:cols[Math.random()*cols.length|0],r:Math.random()*6.28,vr:(Math.random()-.5)*.2,wob:0,life:0,max:H/1.2+120});
+    for(var b=P.length-1;b>=0;b--){
+      var p=P[b];p.life++;p.vx*=p.f;p.vy=p.vy*p.f+p.g;p.x+=p.vx;p.y+=p.vy;
+      var al=p.life>p.max-40?Math.max(0,(p.max-p.life)/40):1;
+      if(p.k===0){p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.globalAlpha=al;ctx.fillStyle=p.c;ctx.scale(1,Math.abs(Math.cos(p.life*.08+p.wob))*.8+.2);ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()}
+      else if(p.k===1){ctx.save();ctx.globalAlpha=al;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.w*.35,0,6.283);ctx.fill();ctx.restore()}
+      else if(p.k===2){p.r+=p.vr;star(p.x,p.y,p.w*.7,al,p.c)}
+      else if(p.k===3){ctx.save();ctx.globalAlpha=al;ctx.strokeStyle=p.c;ctx.lineWidth=2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x-p.vx*2.2,p.y-p.vy*2.2);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.restore()}
+      else if(p.k===4){star(p.x,p.y,4,1,'#fff');if(p.vy>=-1){P.splice(b,1);spark(p.x,p.y,56);confetti(p.x,p.y,26,2,7);continue}}
+      if(p.life>=p.max||p.y>H+60)P.splice(b,1);
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  /* ---------- Mở hộp quà ---------- */
+  var s1=document.getElementById('s1'),s2=document.getElementById('s2'),gift=document.getElementById('gift'),flash=document.getElementById('flash'),busy=false;
+  function center(){var r=gift.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height*.4]}
+  s1.addEventListener('click',function(){
+    if(busy)return;busy=true;
+    document.getElementById('hint').style.visibility='hidden';
+    gift.classList.add('shake');
+    setTimeout(function(){gift.classList.remove('shake');gift.classList.add('open');var c=center();confetti(c[0],c[1],110,1.9,15)},650);
+    setTimeout(function(){rocket(W*.2,H*.28);rocket(W*.8,H*.3)},1200);
+    setTimeout(function(){var c=center();confetti(c[0],c[1],100,2.2,15);rocket(W*.5,H*.2)},1900);
+    setTimeout(function(){flash.classList.add('on')},3000);
+    setTimeout(function(){
+      s1.style.display='none';s2.classList.add('show');flash.classList.remove('on');ambient=true;
+      confetti(W*.15,H+10,40,.5,16);confetti(W*.85,H+10,40,.5,16);
+    },3800);
+  });
+
+  /* ---------- Quay danh hiệu ---------- */
+  var track=document.getElementById('track'),result=document.getElementById('result'),msg=document.getElementById('msg'),tip=document.getElementById('tip'),btns=document.getElementById('btns'),
+      spinBtn=document.getElementById('spin'),nm=document.getElementById('nm'),spinning=false,last=-1;
+  function rnd(n){return Math.random()*n|0}
+  function spin(){
+    if(spinning)return;spinning=true;spinBtn.disabled=true;
+    result.classList.remove('on');msg.classList.remove('on');tip.classList.remove('on');btns.classList.remove('on');
+    var fin;do{fin=rnd(TITLES.length)}while(fin===last&&TITLES.length>1);last=fin;
+    var N=26,i,html='';
+    for(i=0;i<N;i++)html+='<div>'+TITLES[rnd(TITLES.length)][0]+'</div>';
+    html+='<div>'+TITLES[fin][0]+'</div>';
+    track.innerHTML=html;
+    track.style.transition='none';track.style.transform='translateY(0)';void track.offsetWidth;
+    var h=track.firstChild.offsetHeight,dur=reduce?700:3800;
+    track.style.transition='transform '+dur+'ms cubic-bezier(.12,.75,.12,1)';
+    track.style.transform='translateY(-'+(N*h)+'px)';
+    setTimeout(function(){land(fin)},dur+150);
+  }
+  function land(fin){
+    var name=nm.value.trim();
+    document.getElementById('rfor').textContent=name?('Dành tặng '+name):'Dành tặng đồng đội';
+    document.getElementById('rttl').textContent=TITLES[fin][0];
+    document.getElementById('rdsc').textContent=TITLES[fin][1];
+    var st=document.getElementById('stats'),h='',vals=[];
+    for(var i=0;i<3;i++){var v=i===0?100:88+rnd(13);vals.push(v);
+      h+='<div class="stat"><span>'+STATS[i]+'</span><div class="bar"><i data-v="'+v+'"></i></div><b>'+v+'%</b></div>'}
+    st.innerHTML=h;
+    result.classList.add('on');
+    var bars=st.querySelectorAll('i');
+    setTimeout(function(){for(var k=0;k<bars.length;k++)bars[k].style.width=bars[k].getAttribute('data-v')+'%'},120);
+    var r=result.getBoundingClientRect();
+    confetti(W*.5,Math.min(Math.max(r.top+60,120),H*.6),90,2,13);spark(W*.5,Math.max(r.top,100),48);
+    setTimeout(function(){msg.classList.add('on');tip.classList.add('on');btns.classList.add('on');
+      spinBtn.textContent='QUAY LẠI';spinBtn.disabled=false;spinning=false;
+      document.getElementById('pscroll').scrollTo({top:result.offsetTop-20,behavior:reduce?'auto':'smooth'});
+    },700);
+  }
+  spinBtn.addEventListener('click',spin);
+  document.getElementById('again').addEventListener('click',spin);
+  nm.addEventListener('keydown',function(e){if(e.key==='Enter')spin()});
+  document.getElementById('cheer').addEventListener('click',function(){
+    rocket(W*.2,H*.25);rocket(W*.8,H*.25);setTimeout(function(){rocket(W*.5,H*.18);rocket(W*.35,H*.3);rocket(W*.65,H*.3)},450);
+  });
+  document.getElementById('back').addEventListener('click',function(){
+    s2.classList.remove('show');gift.classList.remove('open');ambient=false;s1.style.display='flex';
+    document.getElementById('hint').style.visibility='visible';busy=false;spinning=false;last=-1;
+    result.classList.remove('on');msg.classList.remove('on');tip.classList.remove('on');btns.classList.remove('on');
+    track.style.transition='none';track.style.transform='translateY(0)';track.innerHTML='<div class="q">? ? ?</div>';
+    spinBtn.textContent='QUAY DANH HIỆU';spinBtn.disabled=false;document.getElementById('pscroll').scrollTop=0;
+  });
+})();
+</script>
+</body>
+</html>
